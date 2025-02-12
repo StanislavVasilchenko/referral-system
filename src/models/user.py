@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Mapped, mapped_column
-
 from settings.base import Base
 
 
