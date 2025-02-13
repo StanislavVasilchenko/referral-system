@@ -1,4 +1,6 @@
 import bcrypt
+from fastapi import HTTPException, status
+from sqlalchemy.exc import IntegrityError
 from repositories.users import UsersRepository
 from settings.db_helper import db_helper
 from src.schemes.users import UserCreate, UserOut
@@ -25,6 +27,12 @@ class UserService:
 
     repository = UsersRepository(session=db_helper.scoped_session())
 
-    async def create_user(self, user: UserCreate) -> UserOut:
+    async def create_user(self, user: UserCreate) -> UserOut | dict[str:str]:
         user.password = hashed_password(user.password)
-        return await self.repository.create(user)
+        try:
+            return await self.repository.create(user)
+        except IntegrityError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User already exists",
+            )
