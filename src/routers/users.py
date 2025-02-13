@@ -6,6 +6,6 @@ service = UserService()
 router = APIRouter(tags=["users"])
 
 
-@router.post("/", response_model=UserOut)
+@router.post("/registration", response_model=UserOut)
 async def create_user(user: UserCreate):
     return await service.create_user(user)
