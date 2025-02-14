@@ -16,3 +16,7 @@ class ReferralCodeOut(ReferralCode):
     code: str
     expiry_date: datetime
     user_id: int | None
+
+
+class ReferralCodeDelete(ReferralCode):
+    code: str = "Your code"

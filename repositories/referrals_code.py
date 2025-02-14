@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from settings import ReferralCode
-from src.schemes.referrals_code import ReferralCodeCreate
+from src.schemes.referrals_code import ReferralCodeCreate, ReferralCodeDelete
 
 
 class ReferralCodeRepository:
@@ -26,3 +26,12 @@ class ReferralCodeRepository:
         )
         codes = await self.session.execute(db_query)
         return codes.scalar_one_or_none()
+
+    async def delete(self, ref_code: ReferralCodeDelete):
+        db_query = select(self.model).where(self.model.code == ref_code.code)
+        ref_code_db = await self.session.execute(db_query)
+        instance = ref_code_db.scalar_one_or_none()
+        if instance:
+            await self.session.delete(instance)
+            await self.session.commit()
+        return instance

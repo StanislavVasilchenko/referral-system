@@ -4,8 +4,9 @@ from repositories.referrals_code import ReferralCodeRepository
 from settings.db_helper import db_helper
 from src.exceptions.referral_code import (
     ReferralCodeException,
+    ReferralCodeNotFound,
 )
-from src.schemes.referrals_code import ReferralCodeCreate
+from src.schemes.referrals_code import ReferralCodeCreate, ReferralCodeDelete
 
 
 class ReferralCodeService:
@@ -25,3 +26,9 @@ class ReferralCodeService:
             raise ReferralCodeException
 
         return code
+
+    async def delete_referral_code(self, referral_code: ReferralCodeDelete):
+        result = await self.repository.delete(referral_code)
+        if not result:
+            raise ReferralCodeNotFound
+        return referral_code
