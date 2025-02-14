@@ -22,3 +22,9 @@ class UserLogin(UserBase):
 class UserTokenInfo(UserBase):
     access_token: str
     token_type: str
+
+
+class UserSchema(UserBase):
+    id: int
+    email: EmailStr
+    password: str
