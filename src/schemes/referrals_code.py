@@ -9,8 +9,7 @@ class ReferralCode(BaseModel):
 
 class ReferralCodeCreate(ReferralCode):
     code: str = "Some Code"
-    expiry_date: datetime = datetime.now() + timedelta(days=1)
-    # user_id: int | None = None
+    expiry_date: datetime = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
 
 
 class ReferralCodeOut(ReferralCode):
