@@ -69,5 +69,8 @@ class UserService:
     async def get_current_user(self, payload: dict = Depends(get_token_payload)):
         return await self.repository.get_user_by_email(payload.get("email"))
 
-    async def get_referrals_by_id(self, user: UserSchema):
+    async def get_referrals_auth_user(self, user: UserSchema):
         return await self.repository.get_referrals(user.id)
+
+    async def get_referrals(self, referral_id: int):
+        return await self.repository.get_referrals(referral_id)
