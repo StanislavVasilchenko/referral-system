@@ -1,5 +1,3 @@
-from os import access
-
 import bcrypt
 from fastapi.params import Depends
 from sqlalchemy.exc import IntegrityError
@@ -20,10 +18,8 @@ from src.schemes.users import (
     UserCreate,
     UserOut,
     UserLogin,
-    UserTokenInfo,
     UserSchema,
 )
-from src.utils.auth import encode_jwt_token
 
 
 def hashed_password(
