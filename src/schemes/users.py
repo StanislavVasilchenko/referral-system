@@ -8,6 +8,7 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     email: EmailStr
     password: str = "123qwerty"
+    code: str | None = "Some Code"
 
 
 class UserOut(UserBase):

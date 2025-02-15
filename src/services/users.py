@@ -1,12 +1,22 @@
 import bcrypt
-from fastapi import HTTPException, status
 from fastapi.params import Depends
 from sqlalchemy.exc import IntegrityError
 from repositories.users import UsersRepository
 from settings.db_helper import db_helper
 from src.dependencies.auth_user import get_token_payload
-from src.exceptions.user_exceptions import UserNotFoundException, InvalidEmailOrPassword
-from src.schemes.users import UserCreate, UserOut, UserLogin, UserTokenInfo
+from src.exceptions.user_exceptions import (
+    UserNotFoundException,
+    InvalidEmailOrPassword,
+    UserExistsException,
+    UserWithCodeNotFound,
+)
+from src.schemes.users import (
+    UserCreate,
+    UserOut,
+    UserLogin,
+    UserTokenInfo,
+    UserSchema,
+)
 from src.utils.auth import encode_jwt_token
 
 
@@ -34,12 +44,13 @@ class UserService:
     async def create_user(self, user: UserCreate) -> UserOut | dict[str:str]:
         user.password = hashed_password(user.password)
         try:
-            return await self.repository.create(user)
+            if not user.code:
+                return await self.repository.create(user)
+            return await self.repository.create_user_by_code(user)
         except IntegrityError:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="User already exists",
-            )
+            raise UserExistsException
+        except AttributeError:
+            raise UserWithCodeNotFound
 
     async def login_user(self, user: UserLogin) -> UserTokenInfo:
         user_db = await self.repository.get_user_by_email(user.email)
@@ -55,8 +66,11 @@ class UserService:
         token = encode_jwt_token(payload)
         return token
 
-    # Testing
     async def get_current_user(self, payload: dict = Depends(get_token_payload)):
-        email = payload.get("email")
-        user_db = await self.repository.get_user_by_email(email)
-        return user_db
+        return await self.repository.get_user_by_email(payload.get("email"))
+
+    async def get_referrals_auth_user(self, user: UserSchema):
+        return await self.repository.get_referrals(user.id)
+
+    async def get_referrals(self, referral_id: int):
+        return await self.repository.get_referrals(referral_id)

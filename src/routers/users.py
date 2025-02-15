@@ -1,5 +1,13 @@
-from fastapi import APIRouter
-from src.schemes.users import UserOut, UserCreate, UserLogin, UserTokenInfo
+from fastapi import APIRouter, Query, Depends
+
+from src.dependencies.auth_user import get_token_payload
+from src.schemes.users import (
+    UserOut,
+    UserCreate,
+    UserLogin,
+    UserTokenInfo,
+    UserSchema,
+)
 from src.services.users import UserService
 
 service = UserService()
@@ -18,3 +26,20 @@ async def auth_user(user: UserLogin):
         access_token=token_jwt,
         token_type="Bearer",
     )
+
+
+@router.get(
+    "/me_referrals",
+    response_model=list[UserOut],
+)
+async def me_referrals(user: UserSchema = Depends(service.get_current_user)):
+    return await service.get_referrals_auth_user(user)
+
+
+@router.get(
+    "/referrals",
+    response_model=list[UserOut],
+    dependencies=[Depends(get_token_payload)],
+)
+async def get_referrals(referral_id: int = Query()):
+    return await service.get_referrals(referral_id)
