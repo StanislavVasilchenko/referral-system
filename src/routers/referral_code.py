@@ -7,7 +7,9 @@ from src.schemes.referrals_code import (
 )
 from src.schemes.users import UserSchema
 from src.services.referral_code import ReferralCodeService
+
 from src.services.users import UserService
+from src.dependencies.auth_user import get_token_payload
 
 user_services = UserService()
 code_services = ReferralCodeService()
@@ -22,7 +24,7 @@ async def create_code(
     return await code_services.created_referral_code(form_data, user.id)
 
 
-@router.post("/delete", dependencies=[Depends(user_services.get_current_user)])
+@router.post("/delete", dependencies=[Depends(get_token_payload)])
 async def delete_code(code: ReferralCodeDelete):
     ref_code = await code_services.delete_referral_code(code)
     return {
@@ -34,7 +36,7 @@ async def delete_code(code: ReferralCodeDelete):
     "/get_referral_code",
     response_model=ReferralCodeOut,
     dependencies=[
-        Depends(user_services.get_current_user),
+        Depends(get_token_payload),
     ],
 )
 async def get_referral_code(
