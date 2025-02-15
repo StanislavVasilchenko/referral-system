@@ -6,7 +6,11 @@ from src.exceptions.referral_code import (
     ReferralCodeException,
     ReferralCodeNotFound,
 )
-from src.schemes.referrals_code import ReferralCodeCreate, ReferralCodeDelete
+from src.schemes.referrals_code import (
+    ReferralCodeCreate,
+    ReferralCodeDelete,
+    GetReferralCodeByEmail,
+)
 
 
 class ReferralCodeService:
@@ -32,3 +36,9 @@ class ReferralCodeService:
         if not result:
             raise ReferralCodeNotFound
         return referral_code
+
+    async def get_referral_code_by_email(self, query: GetReferralCodeByEmail):
+        ref_code = await self.repository.get_referral_code_by_email(query)
+        if not ref_code:
+            raise ReferralCodeNotFound
+        return ref_code

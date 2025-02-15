@@ -1,7 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from settings import ReferralCode
-from src.schemes.referrals_code import ReferralCodeCreate, ReferralCodeDelete
+from src.models.user import User
+from src.schemes.referrals_code import (
+    ReferralCodeCreate,
+    ReferralCodeDelete,
+    GetReferralCodeByEmail,
+)
 
 
 class ReferralCodeRepository:
@@ -35,3 +40,8 @@ class ReferralCodeRepository:
             await self.session.delete(instance)
             await self.session.commit()
         return instance
+
+    async def get_referral_code_by_email(self, query: GetReferralCodeByEmail):
+        db_query = select(self.model).join(User).where(User.email == query.email)
+        result = await self.session.execute(db_query)
+        return result.scalar_one_or_none()

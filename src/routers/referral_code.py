@@ -1,5 +1,10 @@
-from fastapi import APIRouter, Depends
-from src.schemes.referrals_code import ReferralCodeCreate, ReferralCodeDelete
+from fastapi import APIRouter, Depends, Query
+from src.schemes.referrals_code import (
+    ReferralCodeCreate,
+    ReferralCodeDelete,
+    GetReferralCodeByEmail,
+    ReferralCodeOut,
+)
 from src.schemes.users import UserSchema
 from src.services.referral_code import ReferralCodeService
 from src.services.users import UserService
@@ -23,3 +28,16 @@ async def delete_code(code: ReferralCodeDelete):
     return {
         "success": f"{ref_code} deleted successfully",
     }
+
+
+@router.get(
+    "/get_referral_code",
+    response_model=ReferralCodeOut,
+    dependencies=[
+        Depends(user_services.get_current_user),
+    ],
+)
+async def get_referral_code(
+    form_data: GetReferralCodeByEmail = Query(),
+):
+    return await code_services.get_referral_code_by_email(form_data)

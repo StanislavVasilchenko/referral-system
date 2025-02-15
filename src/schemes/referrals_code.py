@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class ReferralCode(BaseModel):
@@ -15,8 +14,11 @@ class ReferralCodeCreate(ReferralCode):
 class ReferralCodeOut(ReferralCode):
     code: str
     expiry_date: datetime
-    user_id: int | None
 
 
 class ReferralCodeDelete(ReferralCode):
     code: str = "Your code"
+
+
+class GetReferralCodeByEmail(ReferralCode):
+    email: EmailStr
