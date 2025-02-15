@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from src.schemes.users import UserOut, UserCreate, UserLogin, UserTokenInfo
 from src.services.users import UserService
 
 service = UserService()
-router = APIRouter(prefix="/api/user", tags=["users"])
+router = APIRouter(prefix="/api/user", tags=["Users"])
 
 
 @router.post("/registration", response_model=UserOut)
