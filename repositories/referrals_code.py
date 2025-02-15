@@ -42,6 +42,13 @@ class ReferralCodeRepository:
         return instance
 
     async def get_referral_code_by_email(self, query: GetReferralCodeByEmail):
-        db_query = select(self.model).join(User).where(User.email == query.email)
+        db_query = (
+            select(self.model)
+            .join(User)
+            .where(
+                User.email == query.email,
+                self.model.is_active == True,
+            )
+        )
         result = await self.session.execute(db_query)
         return result.scalar_one_or_none()
