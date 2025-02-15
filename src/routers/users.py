@@ -21,10 +21,10 @@ async def create_user(user: UserCreate):
 
 @router.post("/login", response_model=UserTokenInfo)
 async def auth_user(user: UserLogin):
-    token_jwt = await service.login_user(user)
+    access_token, refresh_token = await service.login_user(user)
     return UserTokenInfo(
-        access_token=token_jwt,
-        token_type="Bearer",
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
 
 

@@ -1,9 +1,15 @@
+from os import access
+
 import bcrypt
 from fastapi.params import Depends
 from sqlalchemy.exc import IntegrityError
 from repositories.users import UsersRepository
 from settings.db_helper import db_helper
-from src.dependencies.auth_user import get_token_payload
+from src.dependencies.auth_user import (
+    get_token_payload,
+    create_access_token,
+    create_refresh_token,
+)
 from src.exceptions.user_exceptions import (
     UserNotFoundException,
     InvalidEmailOrPassword,
@@ -52,19 +58,16 @@ class UserService:
         except AttributeError:
             raise UserWithCodeNotFound
 
-    async def login_user(self, user: UserLogin) -> UserTokenInfo:
+    async def login_user(self, user: UserLogin) -> tuple:
         user_db = await self.repository.get_user_by_email(user.email)
         if not user_db:
             raise UserNotFoundException
         if not validate_password(user.password, user_db.password):
             raise InvalidEmailOrPassword
-        payload = {
-            "sub": user.email.split("@")[0],
-            "email": user.email,
-        }
 
-        token = encode_jwt_token(payload)
-        return token
+        access_token = create_access_token(user)
+        refresh_token = create_refresh_token(user)
+        return access_token, refresh_token
 
     async def get_current_user(self, payload: dict = Depends(get_token_payload)):
         return await self.repository.get_user_by_email(payload.get("email"))
