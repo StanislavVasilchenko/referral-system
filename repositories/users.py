@@ -49,3 +49,8 @@ class UsersRepository:
         )
         result = await self._session.execute(query_in_db)
         return result.scalar()
+
+    async def get_referrals(self, user_id: int):
+        query_in_db = select(self.model).where(self.model.referred_by == user_id)
+        result = await self._session.execute(query_in_db)
+        return result.scalars()

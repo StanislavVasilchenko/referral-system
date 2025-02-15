@@ -1,5 +1,4 @@
 import bcrypt
-from fastapi import HTTPException, status
 from fastapi.params import Depends
 from sqlalchemy.exc import IntegrityError
 from repositories.users import UsersRepository
@@ -11,7 +10,13 @@ from src.exceptions.user_exceptions import (
     UserExistsException,
     UserWithCodeNotFound,
 )
-from src.schemes.users import UserCreate, UserOut, UserLogin, UserTokenInfo
+from src.schemes.users import (
+    UserCreate,
+    UserOut,
+    UserLogin,
+    UserTokenInfo,
+    UserSchema,
+)
 from src.utils.auth import encode_jwt_token
 
 
@@ -61,8 +66,8 @@ class UserService:
         token = encode_jwt_token(payload)
         return token
 
-    # Testing
     async def get_current_user(self, payload: dict = Depends(get_token_payload)):
-        email = payload.get("email")
-        user_db = await self.repository.get_user_by_email(email)
-        return user_db
+        return await self.repository.get_user_by_email(payload.get("email"))
+
+    async def get_referrals_by_id(self, user: UserSchema):
+        return await self.repository.get_referrals(user.id)
