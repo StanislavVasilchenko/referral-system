@@ -1,3 +1,41 @@
-openssl genrsa -out private.pem 2048
-openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+# API для реферальной системы
 
+## Запуск приложения
+
+1) Создать виртуальное окружение
+
+```
+poetry init
+```
+
+2) Активировать виртуальное окружение
+
+```
+poetry env activate
+```
+
+3) Установить зависимости
+
+```
+poetry install
+```
+
+4) Создать в корне проекта файл .env и заполнить его согласно .env.example
+5) В корне проекта создать директорию certs. Перейти в эту директорию и сгенерировать сертификаты для JWT токенов.
+
+```
+Для приватного ключа
+openssl genrsa -out private.pem 2048 
+Для публичного ключа
+openssl rsa -in private.pem -outform PEM -pubout -out public.pem
+```
+
+6) Запуск приложения
+
+```
+Запустить файл main.py
+или
+В терминале выполнить команду:
+uvicorn main:app --reload
+
+```
