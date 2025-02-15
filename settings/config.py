@@ -26,6 +26,7 @@ class AuthSettings(BaseSettings):
     public_key: Path = BASE_DIR / "certs" / "public.pem"
     algorithm: str = "RS256"
     access_token_expire: int = 15
+    refresh_token_expire_days: int = 30
 
 
 class Settings(BaseSettings):

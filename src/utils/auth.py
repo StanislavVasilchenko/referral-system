@@ -10,10 +10,14 @@ def encode_jwt_token(
     private_key: Path = settings.jwt_auth.private_key.read_text(),
     algorithm: str = settings.jwt_auth.algorithm,
     expires_minutes: int = settings.jwt_auth.access_token_expire,
+    expires_timedelta: timedelta | None = None,
 ):
     to_encode = payload.copy()
     now = datetime.now(timezone.utc)
-    expire = now + timedelta(minutes=expires_minutes)
+    if expires_timedelta:
+        expire = now + expires_timedelta
+    else:
+        expire = now + timedelta(minutes=expires_minutes)
     to_encode.update(
         exp=expire,
     )
